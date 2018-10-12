@@ -59,7 +59,7 @@
           title: 'Twitter Feeling Timeline', 
         };
 
-        var trace1 = {
+        var positive = {
           type: "scatter",
           mode: "lines",
           name: 'AAPL High',
@@ -68,7 +68,16 @@
           line: {color: '#17BECF'}
         }
                     
-        var trace2 = {
+        var neutral = {
+          type: "scatter",
+          mode: "lines",
+          name: 'AAPL Low',
+          x: unpack(rows, 'Date'),
+          y: unpack(rows, 'AAPL.Low'),
+          line: {color: '#FE9A2E'}
+        }
+
+        var negative = {
           type: "scatter",
           mode: "lines",
           name: 'AAPL Low',

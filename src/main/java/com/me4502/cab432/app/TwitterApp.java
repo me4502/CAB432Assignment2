@@ -7,6 +7,7 @@ import static spark.Spark.staticFiles;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.me4502.cab432.twitter.TwitterConnector;
 import freemarker.template.Configuration;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -26,6 +27,8 @@ public class TwitterApp {
 
     // This is a Singleton class - setup as soon as it's first referenced.
     private static final TwitterApp instance = new TwitterApp();
+
+    private TwitterConnector twitterConnector;
 
     // Gson
     private Gson gson = new GsonBuilder().create();
@@ -51,12 +54,13 @@ public class TwitterApp {
         try {
             CommentedConfigurationNode root = configManager.load();
 
-
+            String twitterKey = root.getNode("twitter-key").getString("INSERT");
+            String twitterSecret = root.getNode("twitter-secret").getString("INSERT");
 
             configManager.save(root);
 
             // Try to use those keys to load the connectors.
-
+            this.twitterConnector = new TwitterConnector(twitterKey, twitterSecret);
         } catch (Exception e) {
             // If an exception occurs here, it's bad - runtime it.
             throw new RuntimeException(e);
@@ -105,6 +109,15 @@ public class TwitterApp {
         config.setClassForTemplateLoading(TwitterApp.class, "/static/html/");
 
         return new FreeMarkerEngine(config).render(new ModelAndView(model, templatePath));
+    }
+
+    /**
+     * Gets the Twitter Connector.
+     *
+     * @return The twitter connector
+     */
+    public TwitterConnector getTwitterConnector() {
+        return this.twitterConnector;
     }
 
     /**

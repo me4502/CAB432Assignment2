@@ -5,3 +5,5 @@ out/
 *.iml
 node_modules/
 build/
+*~
+.terraform/

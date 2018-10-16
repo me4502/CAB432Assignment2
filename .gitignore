@@ -3,3 +3,5 @@
 out/
 *.class
 *.iml
+node_modules/
+build/

@@ -5,15 +5,15 @@
  * return false if the user ID is empty.
  * @return {boolean}
  */
-function isUserIdEmpty(){
-  var isValid = true;
-  var errorMessage = "Please enter a user ID";
-  var userID = document.getElementById("icon_prefix").value;
+export function isUserIdEmpty() {
+    let isValid = true;
+    const errorMessage = "Please enter a user ID";
+    const userID = document.getElementById("icon_prefix").value;
 
-  if (userID === ""){
-    alert(errorMessage);
-    isValid = false;
-  }
+    if (userID === "") {
+        alert(errorMessage);
+        isValid = false;
+    }
 
-  return isValid;
+    return isValid;
 }

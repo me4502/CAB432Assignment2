@@ -1,6 +1,7 @@
 package com.me4502.cab432.app;
 
 import static freemarker.template.Configuration.VERSION_2_3_26;
+import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
@@ -88,7 +89,8 @@ public class TwitterApp {
         }
 
         // Setup routes
-
+        get("/", (request, response)
+                -> render(Map.of(), "index.html"));
     }
 
     /**
@@ -100,7 +102,7 @@ public class TwitterApp {
      */
     private static String render(Map<String, Object> model, String templatePath) {
         freemarker.template.Configuration config = new Configuration(VERSION_2_3_26);
-        config.setClassForTemplateLoading(TwitterApp.class, "/templates/");
+        config.setClassForTemplateLoading(TwitterApp.class, "/static/html/");
 
         return new FreeMarkerEngine(config).render(new ModelAndView(model, templatePath));
     }

@@ -29,6 +29,9 @@ dependencies {
     compile "com.sparkjava:spark-template-freemarker:2.7.1"
 
     // API Services
+    compile "org.twitter4j:twitter4j-core:[4.0,)"
+    compile "edu.stanford.nlp:stanford-corenlp:3.9.2"
+    compile "joinery:joinery-dataframe:1.9"
 
     // Configuration
     compile 'org.spongepowered:configurate-hocon:3.6'

@@ -13,6 +13,7 @@ sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
+    jcenter()
     maven {
         name = 'sponge'
         url = 'https://repo.spongepowered.org/maven'

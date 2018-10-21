@@ -5,7 +5,7 @@ RUN apt-get update \
   && apt-get -y install software-properties-common \
   && add-apt-repository ppa:linuxuprising/java \
   && apt-get update \
-  && echo oracle-java11-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections \
+  && echo oracle-java11-installer shared/accepted-oracle-license-v1-2 select true | /usr/bin/debconf-set-selections \
   && apt-get -y install oracle-java11-installer
 
 ADD CAB432Assignment2-*.jar app.jar

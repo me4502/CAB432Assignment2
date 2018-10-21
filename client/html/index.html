@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>CAB432-Assignment2</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="ttps://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
           media="screen,projection"/>
 </head>
 <body>
@@ -48,51 +48,6 @@
 
     <!-- Chart Space -->
     <div id="analysisChart"></div>
-    <script>
-        Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function (err, rows) {
-            function unpack(rows, key) {
-                return rows.map(function (row) {
-                    return row[key];
-                });
-            }
-
-            var layout = {
-                title: 'Twitter Feeling Timeline'
-            };
-
-            var positive = {
-                type: "scatter",
-                mode: "lines",
-                name: 'positive',
-                x: unpack(rows, 'Date'),
-                y: unpack(rows, 'AAPL.High'),
-                line: {color: '#2be6ff'}
-            };
-
-            var neutral = {
-                type: "scatter",
-                mode: "lines",
-                name: 'neutral',
-                x: unpack(rows, 'Date'),
-                y: unpack(rows, 'AAPL.Low'),
-                line: {color: '#39ff2b'}
-            };
-
-            var negative = {
-                type: "scatter",
-                mode: "lines",
-                name: 'negative',
-                x: unpack(rows, 'Date'),
-                y: unpack(rows, 'AAPL.Low'),
-                line: {color: '#ff2b2b'}
-            };
-
-            var analysisData = [positive, neutral, negative];
-
-            Plotly.newPlot('analysisChart', analysisData, layout);
-
-        })
-    </script>
 </div>
 
 <!-- Footer -->

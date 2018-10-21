@@ -21,3 +21,11 @@ variable "security_group" {
 variable "docker_tag" {
   description = "Docker tag"
 }
+
+variable "max_instances" {
+  default = 16
+}
+
+variable "min_instances" {
+  default = 2
+}

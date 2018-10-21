@@ -104,10 +104,10 @@ public class TwitterApp {
                 .map(sentimentConnector::getAllSentiment).map(gson::toJson)
                 .orElseGet(() -> badRequest(response, "Failed to lookup user!")));
 
-//        get("/twitter/get_friends/:user", (request, response)
-//                -> twitterConnector.getTweetsForUser(request.params("user"))
-//                .map(sentimentConnector::getAllSentiment).map(gson::toJson)
-//                .orElseGet(() -> badRequest(response, "Failed to lookup user!")));
+        get("/twitter/get_friends/:user", (request, response)
+                -> twitterConnector.getFriendsForUser(request.params("user"))
+                .map(gson::toJson)
+                .orElseGet(() -> badRequest(response, "Failed to lookup friends!")));
     }
 
     /**

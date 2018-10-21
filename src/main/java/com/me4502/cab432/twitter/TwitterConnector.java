@@ -6,15 +6,21 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.auth.OAuth2Token;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TwitterConnector {
 
     private static final int TWEET_COUNT = 10;
+    private static final int FOLLOWER_COUNT = 100;
 
     private static final ThreadLocal<Paging> PAGING_LOCAL = ThreadLocal.withInitial(() -> new Paging(1, TWEET_COUNT));
 
@@ -42,6 +48,31 @@ public class TwitterConnector {
         setBearer();
         try {
             return Optional.of(twitter.timelines().getUserTimeline(displayName, PAGING_LOCAL.get()));
+        } catch (TwitterException e) {
+            return Optional.empty();
+        }
+    }
+
+    private List<String> filterUserList(List<User> users) {
+        return users.stream()
+                .sorted(Comparator.comparingInt(User::getStatusesCount).reversed())
+                .map(User::getScreenName)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<List<String>> getFriendsForUser(String displayName) {
+        setBearer();
+        try {
+            List<String> followers = filterUserList(twitter.friendsFollowers().getFollowersList(displayName, -1, FOLLOWER_COUNT, true, true));
+            List<String> friends = filterUserList(twitter.friendsFollowers().getFriendsList(displayName, -1, FOLLOWER_COUNT, true, true));
+
+            List<String> common = new ArrayList<>(followers);
+            common.retainAll(friends);
+            if (common.isEmpty()) {
+                return Optional.of(followers.size() > friends.size() ? followers : friends);
+            }
+
+            return Optional.of(common);
         } catch (TwitterException e) {
             return Optional.empty();
         }

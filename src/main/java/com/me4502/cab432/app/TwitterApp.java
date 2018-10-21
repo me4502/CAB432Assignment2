@@ -7,6 +7,7 @@ import static spark.Spark.staticFiles;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.me4502.cab432.sentiment.SentimentConnector;
 import com.me4502.cab432.twitter.TwitterConnector;
 import freemarker.template.Configuration;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -29,6 +30,7 @@ public class TwitterApp {
     private static final TwitterApp instance = new TwitterApp();
 
     private TwitterConnector twitterConnector;
+    private SentimentConnector sentimentConnector;
 
     // Gson
     private Gson gson = new GsonBuilder().create();
@@ -61,6 +63,7 @@ public class TwitterApp {
 
             // Try to use those keys to load the connectors.
             this.twitterConnector = new TwitterConnector(twitterKey, twitterSecret);
+            this.sentimentConnector = new SentimentConnector();
         } catch (Exception e) {
             // If an exception occurs here, it's bad - runtime it.
             throw new RuntimeException(e);
@@ -95,6 +98,16 @@ public class TwitterApp {
         // Setup routes
         get("/", (request, response)
                 -> render(Map.of(), "index.html"));
+
+        get("/twitter/get_user/:user", (request, response)
+                -> twitterConnector.getTweetsForUser(request.params("user"))
+                .map(sentimentConnector::getAllSentiment).map(gson::toJson)
+                .orElseGet(() -> badRequest(response, "Failed to lookup user!")));
+
+//        get("/twitter/get_friends/:user", (request, response)
+//                -> twitterConnector.getTweetsForUser(request.params("user"))
+//                .map(sentimentConnector::getAllSentiment).map(gson::toJson)
+//                .orElseGet(() -> badRequest(response, "Failed to lookup user!")));
     }
 
     /**

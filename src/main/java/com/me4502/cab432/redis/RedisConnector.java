@@ -8,6 +8,7 @@ import com.amazonaws.services.elasticache.AmazonElastiCache;
 import com.amazonaws.services.elasticache.AmazonElastiCacheClientBuilder;
 import com.amazonaws.services.elasticache.model.DescribeCacheClustersRequest;
 import com.amazonaws.services.elasticache.model.DescribeCacheClustersResult;
+import com.me4502.cab432.app.TwitterApp;
 import redis.clients.jedis.Jedis;
 import twitter4j.Logger;
 
@@ -21,6 +22,10 @@ public class RedisConnector {
     private Jedis jedis;
 
     public RedisConnector(String appKey, String secretKey) {
+        if (TwitterApp.DEBUG) {
+            logger.info("In Debug Mode. Redis Disabled!");
+            return;
+        }
         try {
             AWSCredentials credentials;
             credentials = new BasicAWSCredentials(appKey, secretKey);

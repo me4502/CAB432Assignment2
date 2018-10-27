@@ -1,6 +1,5 @@
 package com.me4502.cab432.twitter;
 
-import com.me4502.cab432.app.TwitterApp;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;

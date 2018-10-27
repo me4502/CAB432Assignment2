@@ -40,10 +40,8 @@ public class RedisConnector {
             dccRequest.setShowCacheNodeInfo(true);
 
             DescribeCacheClustersResult result = client.describeCacheClusters(dccRequest);
-            result.getCacheClusters().stream().flatMap(cluster -> cluster.getCacheNodes().stream()).findFirst().ifPresent(node -> {
-                String url = node.getEndpoint().getAddress() + ":" + node.getEndpoint().getPort();
-                jedis = new Jedis(url);
-            });
+            result.getCacheClusters().stream().flatMap(cluster -> cluster.getCacheNodes().stream()).findFirst().ifPresent(node
+                    -> jedis = new Jedis(node.getEndpoint().getAddress(), node.getEndpoint().getPort()));
             if (jedis == null) {
                 logger.warn("Failed to find a Redis instance! Redis will not be used.");
             }

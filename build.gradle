@@ -34,6 +34,8 @@ dependencies {
     compile "edu.stanford.nlp:stanford-corenlp:3.9.2"
     compile "edu.stanford.nlp:stanford-corenlp:3.9.2:models"
     compile "joinery:joinery-dataframe:1.9"
+    compile "redis.clients:jedis:2.9.0"
+    compile 'com.amazonaws:aws-java-sdk:1.11.407'
 
     // Configuration
     compile 'org.spongepowered:configurate-hocon:3.6'

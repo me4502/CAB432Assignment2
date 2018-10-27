@@ -7,6 +7,7 @@ import static spark.Spark.staticFiles;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.me4502.cab432.redis.RedisConnector;
 import com.me4502.cab432.sentiment.SentimentConnector;
 import com.me4502.cab432.twitter.TwitterConnector;
 import freemarker.template.Configuration;
@@ -31,6 +32,7 @@ public class TwitterApp {
 
     private TwitterConnector twitterConnector;
     private SentimentConnector sentimentConnector;
+    private RedisConnector redisConnector;
 
     // Gson
     private Gson gson = new GsonBuilder().create();
@@ -59,11 +61,15 @@ public class TwitterApp {
             String twitterKey = root.getNode("twitter-key").getString("INSERT");
             String twitterSecret = root.getNode("twitter-secret").getString("INSERT");
 
+            String awsKey = root.getNode("aws-key").getString("INSERT");
+            String awsSecret = root.getNode("aws-secret").getString("INSERT");
+
             configManager.save(root);
 
             // Try to use those keys to load the connectors.
             this.twitterConnector = new TwitterConnector(twitterKey, twitterSecret);
             this.sentimentConnector = new SentimentConnector();
+            this.redisConnector = new RedisConnector(awsKey, awsSecret);
         } catch (Exception e) {
             // If an exception occurs here, it's bad - runtime it.
             throw new RuntimeException(e);
@@ -100,14 +106,18 @@ public class TwitterApp {
                 -> render(Map.of(), "index.html"));
 
         get("/twitter/get_user/:user", (request, response)
-                -> twitterConnector.getTweetsForUser(request.params("user"))
-                .map(sentimentConnector::getAllSentiment).map(gson::toJson)
-                .orElseGet(() -> badRequest(response, "Failed to lookup user!")));
+                -> getRedisConnector().getOrSet("sentiment/" + request.params("user"), ()
+                        -> twitterConnector.getTweetsForUser(request.params("user"))
+                        .map(sentimentConnector::getAllSentiment).map(gson::toJson)
+                        .orElseGet(() -> badRequest(response, "Failed to lookup user!")),
+                60 * 15));
 
         get("/twitter/get_friends/:user", (request, response)
-                -> twitterConnector.getFriendsForUser(request.params("user"))
-                .map(gson::toJson)
-                .orElseGet(() -> badRequest(response, "Failed to lookup friends!")));
+                -> getRedisConnector().getOrSet("friends/" + request.params("user"), ()
+                        -> twitterConnector.getFriendsForUser(request.params("user"))
+                        .map(gson::toJson)
+                        .orElseGet(() -> badRequest(response, "Failed to lookup friends!")),
+                60 * 15));
     }
 
     /**
@@ -131,6 +141,15 @@ public class TwitterApp {
      */
     public TwitterConnector getTwitterConnector() {
         return this.twitterConnector;
+    }
+
+    /**
+     * Gets the Redis Connector.
+     *
+     * @return The Redis connector
+     */
+    public RedisConnector getRedisConnector() {
+        return this.redisConnector;
     }
 
     /**

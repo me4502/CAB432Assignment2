@@ -1,5 +1,6 @@
 package com.me4502.cab432.twitter;
 
+import com.me4502.cab432.app.TwitterApp;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -29,6 +30,7 @@ public class TwitterConnector {
     private OAuth2Token bearerToken;
 
     public TwitterConnector(String apiKey, String apiSecret) throws TwitterException {
+
         Configuration config = new ConfigurationBuilder()
                 .setApplicationOnlyAuthEnabled(true)
                 .build();

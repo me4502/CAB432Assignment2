@@ -54,7 +54,7 @@ jar {
 }
 
 shadowJar {
-
+    zip64 = true
 }
 
 node {

@@ -7,37 +7,19 @@ export function createChart() {
         }
 
         const layout = {
-            title: 'Twitter Feeling Timeline'
+            title: 'Twitter Sentiment Timeline'
         };
 
         const positive = {
             type: "scatter",
             mode: "lines",
             name: 'positive',
-            x: unpack(rows, 'Date'),
-            y: unpack(rows, 'AAPL.High'),
+            x: unpack(rows, 'time'),
+            y: unpack(rows, 'sentiment'),
             line: {color: '#2be6ff'}
         };
 
-        const neutral = {
-            type: "scatter",
-            mode: "lines",
-            name: 'neutral',
-            x: unpack(rows, 'Date'),
-            y: unpack(rows, 'AAPL.Low'),
-            line: {color: '#39ff2b'}
-        };
-
-        const negative = {
-            type: "scatter",
-            mode: "lines",
-            name: 'negative',
-            x: unpack(rows, 'Date'),
-            y: unpack(rows, 'AAPL.Low'),
-            line: {color: '#ff2b2b'}
-        };
-
-        const analysisData = [positive, neutral, negative];
+        const analysisData = [positive];
 
         Plotly.newPlot('analysisChart', analysisData, layout);
 

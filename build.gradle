@@ -27,7 +27,6 @@ dependencies {
 
     // Web
     compile "com.sparkjava:spark-core:2.7.2"
-    compile "com.sparkjava:spark-template-freemarker:2.7.1"
 
     // API Services
     compile "org.twitter4j:twitter4j-core:[4.0,)"

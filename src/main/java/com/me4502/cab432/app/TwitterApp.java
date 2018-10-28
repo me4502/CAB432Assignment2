@@ -1,8 +1,8 @@
 package com.me4502.cab432.app;
 
-import static freemarker.template.Configuration.VERSION_2_3_26;
 import static spark.Spark.get;
 import static spark.Spark.port;
+import static spark.Spark.redirect;
 import static spark.Spark.staticFiles;
 
 import com.google.gson.Gson;
@@ -10,14 +10,11 @@ import com.google.gson.GsonBuilder;
 import com.me4502.cab432.redis.RedisConnector;
 import com.me4502.cab432.sentiment.SentimentConnector;
 import com.me4502.cab432.twitter.TwitterConnector;
-import freemarker.template.Configuration;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import spark.ModelAndView;
 import spark.Response;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -102,36 +99,21 @@ public class TwitterApp {
         }
 
         // Setup routes
-        get("/", (request, response)
-                -> render(Map.of(), "index.html"));
+        redirect.get("/", "index.html");
 
         get("/twitter/get_user/:user", (request, response)
                 -> getRedisConnector().getOrSet("sentiment/" + request.params("user"), ()
-                        -> twitterConnector.getTweetsForUser(request.params("user"))
-                        .map(sentimentConnector::getAllSentiment).map(gson::toJson)
-                        .orElseGet(() -> badRequest(response, "Failed to lookup user!")),
+                        -> getTwitterConnector().getTweetsForUser(request.params("user"))
+                        .map(getSentimentConnector()::getAllSentiment).map(gson::toJson)
+                        .orElseGet(() -> badRequest(response, "Failed to lookup user " + request.params("user"))),
                 60 * 15));
 
         get("/twitter/get_friends/:user", (request, response)
                 -> getRedisConnector().getOrSet("friends/" + request.params("user"), ()
-                        -> twitterConnector.getFriendsForUser(request.params("user"))
+                        -> getTwitterConnector().getFriendsForUser(request.params("user"))
                         .map(gson::toJson)
-                        .orElseGet(() -> badRequest(response, "Failed to lookup friends!")),
+                        .orElseGet(() -> badRequest(response, "Failed to lookup friends for " + request.params("user"))),
                 60 * 15));
-    }
-
-    /**
-     * Helper method to render Freemarker template files.
-     *
-     * @param model The model
-     * @param templatePath The template path
-     * @return The rendered template
-     */
-    private static String render(Map<String, Object> model, String templatePath) {
-        freemarker.template.Configuration config = new Configuration(VERSION_2_3_26);
-        config.setClassForTemplateLoading(TwitterApp.class, "/static/html/");
-
-        return new FreeMarkerEngine(config).render(new ModelAndView(model, templatePath));
     }
 
     /**
@@ -150,6 +132,15 @@ public class TwitterApp {
      */
     public RedisConnector getRedisConnector() {
         return this.redisConnector;
+    }
+
+    /**
+     * Gets the Sentiment Connector.
+     *
+     * @return The sentiment connector
+     */
+    public SentimentConnector getSentimentConnector() {
+        return this.sentimentConnector;
     }
 
     /**

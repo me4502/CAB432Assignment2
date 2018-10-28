@@ -1,72 +1,82 @@
 /**
- * This function checks if a user ID input is empty.
- *
- * return true if the user ID is not empty.
- * return false if the user ID is empty.
- * @return {boolean}
- */
-function isUserIdEmpty() {
-    let isValid = true;
-    const userID = document.getElementById("icon_prefix").value;
-
-    if (userID === "") {
-        isValid = false;
-    }
-
-    return isValid;
-}
-
-/**
  * /twitter/get_user/THE_USERNAME
  * a list of time and sentiment
  */
-export function getUserIDRequest(){
-    let isValid = isUserIdEmpty();
-    const userID = document.getElementById("icon_prefix").value;
+export function getUserIDRequest(append) {
+    let userID = document.getElementById("icon_prefix").value;
 
-    if (!isValid){
-        M.toast({html: "User ID is empty!"})
+    if (userID === "") {
+        M.toast({html: "User ID is empty!"});
         return false;
     } else {
+        if (userID.startsWith("@")) {
+            userID = userID.substring(1, userID.length);
+        }
+        makePlotForUser(userID, append);
+        getFriendsForUser(userID);
+    }
+}
 
-        window.fetch('/twitter/get_user/' + userID)
-            .then(res => res.json())
-            .then(json => {
+function getFriendsForUser(userID) {
+    window.fetch("/twitter/get_friends/" + userID)
+        .then(res => res.json())
+        .then(json => {
+            if ("error" in json) {
+                throw {"message": json["error"]};
+            }
+            for (let friend in json) {
+                makePlotForUser(json[friend], true);
+            }
+        })
+        .catch(ex => {
+            M.toast({html: ex.message});
+        });
+}
 
-                let timeLine = [];
-                let sentimentLine = [];
+function makePlotForUser(userID, append) {
+    window.fetch('/twitter/get_user/' + userID)
+        .then(res => res.json())
+        .then(json => {
+            if ("error" in json) {
+                throw {"message": json["error"]};
+            }
+            let timeLine = [];
+            let sentimentLine = [];
 
-                for (let data in json){
-                    data = json[data]; // a list of {"time", "sentiment"}
-                    // convert "UNIX_Timestamp" to "Time"
-                    var date = new Date(data["time"] * 1000);
-                    timeLine.push(date);
-                    sentimentLine.push(data["sentiment"]);
-                }
+            for (let data in json) {
+                data = json[data]; // a list of {"time", "sentiment"}
+                // convert "UNIX_Timestamp" to "Time"
+                timeLine.push(new Date(data["time"] * 1000));
+                sentimentLine.push(data["sentiment"]);
+            }
 
-
-                //TODO: from here, setup "Plotly" data
-                var d3 = Plotly.d3;
-                var sentimentTimeLine = {
-                    "data": [
-                    {"type": "scatter",
-                     "mode": "line",
-                     "name": 'sentiment timeline',
-                     "x": timeLine,
-                     "y": sentimentLine,
-                     "line": {color: '#00FF00'}
+            let sentimentTimeLine = {
+                "data": [
+                    {
+                        "type": "scatter",
+                        "mode": "line",
+                        "name": userID,
+                        "x": timeLine,
+                        "y": sentimentLine,
                     }],
-                    "layout": {
-                     "title": "Twitter Sentiment Timeline"
-                    }
+                "layout": {
+                    "title": "@" + userID + "'s Twitter Timeline"
                 }
-                Plotly.plot(
+            };
+
+            if (append) {
+                Plotly.addTraces(
+                    "analysisChart",
+                    sentimentTimeLine.data
+                );
+            } else {
+                Plotly.react(
                     "analysisChart",
                     sentimentTimeLine.data,
                     sentimentTimeLine.layout
                 );
-            }).catch(ex => {
-                // ERROR handling
-        });
-    }
+            }
+        }).catch(ex => {
+            M.toast({html: ex.message});
+    });
 }

@@ -10,6 +10,7 @@ import com.amazonaws.services.elasticache.model.DescribeCacheClustersRequest;
 import com.amazonaws.services.elasticache.model.DescribeCacheClustersResult;
 import com.me4502.cab432.app.TwitterApp;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisException;
 import twitter4j.Logger;
 
 import java.util.Optional;
@@ -59,19 +60,28 @@ public class RedisConnector {
     }
 
     public void setRedisValue(String key, String value, int expirySeconds) {
-        if (jedis != null) {
-            jedis.setex(key, expirySeconds, value);
+        try {
+            if (jedis != null) {
+                jedis.setex(key, expirySeconds, value);
+            }
+        } catch (JedisException e) {
+            // If it fails to set, print to console but don't block it running.
+            e.printStackTrace();
         }
     }
 
     public String getOrSet(String key, Supplier<String> supplier, int expirySeconds) {
-        Optional<String> value = getRedisValue(key);
-        if (value.isPresent()) {
-            return value.get();
-        } else {
-            String val = supplier.get();
-            setRedisValue(key, val, expirySeconds);
-            return val;
+        try {
+            Optional<String> value = getRedisValue(key);
+            if (value.isPresent()) {
+                return value.get();
+            } else {
+                String val = supplier.get();
+                setRedisValue(key, val, expirySeconds);
+                return val;
+            }
+        } catch (Exception e) {
+            return supplier.get();
         }
     }
 }

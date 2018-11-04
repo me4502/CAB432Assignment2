@@ -81,8 +81,6 @@ public class TwitterApp {
      * @return The json-ified error message
      */
     private String badRequest(Response response, String message) {
-        response.status(400);
-        response.header("Bad Request", message);
         return gson.toJson(Map.of("error", message));
     }
 

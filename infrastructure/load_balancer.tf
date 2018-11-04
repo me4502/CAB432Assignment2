@@ -4,9 +4,9 @@ resource "aws_alb" "ecs-load-balancer" {
     "${var.security_group}"
   ]
   subnets = [
-    "subnet-00aaa367",
-    "subnet-811c25c8",
-    "subnet-bf18dce6"
+    "${var.subnet_a}",
+    "${var.subnet_b}",
+    "${var.subnet_c}"
   ]
 
   tags {

@@ -16,8 +16,8 @@ resource "aws_ecs_task_definition" "sentiment" {
         "hostPort": 80
       }
     ],
-    "memory": 500,
-    "cpu": 10
+    "memory": 3500,
+    "cpu": 2000
   }
 ]
 DEFINITION

@@ -13,6 +13,7 @@ resource "aws_ecs_service" "main-ecs-service" {
 
   depends_on = [
     "aws_alb_target_group.ecs-target-group",
-    "aws_ecs_task_definition.sentiment"
+    "aws_ecs_task_definition.sentiment",
+    "aws_elasticache_cluster.redis-cache"
   ]
 }

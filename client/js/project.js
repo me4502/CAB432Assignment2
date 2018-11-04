@@ -34,6 +34,10 @@ function getFriendsForUser(userID) {
 }
 
 function makePlotForUser(userID, append) {
+    if (!append) {
+        document.getElementById('loading-bar').style.display = 'block';
+    }
+
     window.fetch('/twitter/get_user/' + userID)
         .then(res => res.json())
         .then(json => {
@@ -75,6 +79,7 @@ function makePlotForUser(userID, append) {
                     sentimentTimeLine.data,
                     sentimentTimeLine.layout
                 );
+                document.getElementById('loading-bar').style.display = 'none';
             }
         }).catch(ex => {
             M.toast({html: ex.message});

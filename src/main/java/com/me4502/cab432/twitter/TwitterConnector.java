@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 
 public class TwitterConnector {
 
-    private static final int TWEET_COUNT = 10;
-    private static final int FOLLOWER_COUNT = 100;
+    private static final int TWEET_COUNT = 30;
+    private static final int FOLLOWER_COUNT = 75;
 
     private static final ThreadLocal<Paging> PAGING_LOCAL = ThreadLocal.withInitial(() -> new Paging(1, TWEET_COUNT));
 

@@ -29,3 +29,15 @@ variable "max_instances" {
 variable "min_instances" {
   default = 2
 }
+
+variable "subnet_a" {
+  default = "subnet-00aaa367"
+}
+
+variable "subnet_b" {
+  default = "subnet-811c25c8"
+}
+
+variable "subnet_c" {
+  default = "subnet-bf18dce6"
+}

@@ -3,9 +3,9 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   max_size = "${var.max_instances}"
   min_size = "${var.min_instances}"
   vpc_zone_identifier = [
-    "subnet-00aaa367",
-    "subnet-811c25c8",
-    "subnet-bf18dce6"
+    "${var.subnet_a}",
+    "${var.subnet_b}",
+    "${var.subnet_c}"
   ]
   target_group_arns = [
     "${aws_alb_target_group.ecs-target-group.arn}"
